@@ -15,7 +15,7 @@ class Category(models.Model):
 
 
 class Item(models.Model):
-    Category = models.ForeignKey(Category, related_name='items',
+    category = models.ForeignKey(Category, related_name='items',
                                  on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -23,7 +23,7 @@ class Item(models.Model):
     image = models.ImageField(upload_to='item_images', blank=True, null=True)
     is_sold = models.BooleanField(default=False, verbose_name="sold")
     created_by = models.ForeignKey(User, related_name='items',
-                                   on_delete=models.CASCADE)
+                                   on_delete=models.CASCADE, verbose_name="Seller")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
