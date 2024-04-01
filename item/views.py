@@ -1,12 +1,15 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DeleteView, UpdateView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.urls import reverse_lazy
+
 from .models import Item, Category
-from .forms import NewItemForm
+from .forms import NewItemForm, UpdateItemForm
 
 
-class CreateNewItemView(CreateView):
+class CreateNewItemView(LoginRequiredMixin, CreateView):
     model = Item
     template_name = 'create_new_item.html'
     form_class = NewItemForm
@@ -60,3 +63,23 @@ def detail(request, pk):
         'related_items': related_items,
         }
     return render(request, 'detail.html', context)
+
+
+class DeleteItem(LoginRequiredMixin, DeleteView):
+    model = Item
+    fields = '__all__'
+    template_name = 'confirm_delete.html'
+    success_url = reverse_lazy("dashboard")
+
+
+class UpdateItem(LoginRequiredMixin, UpdateView):
+    model = Item
+    template_name = 'edit.html'
+    form_class = UpdateItemForm
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        item = self.object
+        return reverse_lazy("detail", kwargs={'pk': item.id})
